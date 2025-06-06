@@ -1,20 +1,9 @@
-// Импортируем изображения
-// import '../images/logo.svg';
-// import '../images/avatar.jpg';
-// import '../images/add-icon.svg';
-// import '../images/edit-icon.svg';
-// import '../images/close.svg';
-// import '../images/delete-icon.svg';
-// import '../images/like-active.svg';
-// import '../images/like-inactive.svg';
-// import '../images/card_1.jpg';
-// import '../images/card_2.jpg'; 
-// import '../images/card_3.jpg';
-
 import '../pages/index.css';
 
 import { initialCards } from './cards.js';
 
+
+console.log(initialCards);
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
 
