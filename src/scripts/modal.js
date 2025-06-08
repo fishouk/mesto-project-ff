@@ -1,3 +1,7 @@
+import { addCardPopup, editProfilePopup } from './index.js';
+
+console.log(addCardPopup, editProfilePopup);
+
 // Функция для обработки нажатия клавиши Esc
 function handleEscapeKey(evt) {
   if (evt.key === 'Escape') {
@@ -45,13 +49,12 @@ export function initModals() {
 // Функция для инициализации кнопок открытия модальных окон
 export function initModalTriggers() {
   const profileEditButton = document.querySelector('.profile__edit-button');
-  const editPopup = document.querySelector('.popup_type_edit');
   
   // Кнопка редактирования профиля
-  if (profileEditButton && editPopup) {
+  if (profileEditButton && editProfilePopup) {
     profileEditButton.addEventListener('click', () => {
-      const nameInput = editPopup.querySelector('.popup__input_type_name');
-      const descriptionInput = editPopup.querySelector('.popup__input_type_description');
+      const nameInput = editProfilePopup.querySelector('.popup__input_type_name');
+      const descriptionInput = editProfilePopup.querySelector('.popup__input_type_description');
       const profileTitle = document.querySelector('.profile__title');
       const profileDescription = document.querySelector('.profile__description');
       
@@ -62,22 +65,21 @@ export function initModalTriggers() {
         descriptionInput.value = profileDescription.textContent;
       }
       
-      openModal(editPopup);
+      openModal(editProfilePopup);
     });
   }
   
   // Кнопка добавления новой карточки
   const profileAddButton = document.querySelector('.profile__add-button');
-  const newCardPopup = document.querySelector('.popup_type_new-card');
   
-  if (profileAddButton && newCardPopup) {
+  if (profileAddButton && addCardPopup) {
     profileAddButton.addEventListener('click', () => {
-      const form = newCardPopup.querySelector('.popup__form');
+      const form = addCardPopup.querySelector('.popup__form');
       if (form) {
         form.reset();
       }
       
-      openModal(newCardPopup);
+      openModal(addCardPopup);
     });
   }
 }
