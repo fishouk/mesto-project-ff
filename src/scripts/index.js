@@ -1,7 +1,9 @@
 import '../pages/index.css';
 
-import { showInitialCards } from './cards.js';
+import { showInitialCards } from './card.js';
 import { initModals, initModalTriggers } from './modal.js';
+import './editProfile.js';
+import './addCard.js';
 
 showInitialCards();
 

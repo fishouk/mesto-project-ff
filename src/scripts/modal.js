@@ -9,16 +9,16 @@ function handleEscapeKey(evt) {
 }
 
 // Функция для открытия модального окна
-function openModal(popup) {
+export function openModal(popup) {
   popup.classList.add('popup_is-opened');
   // Добавляем обработчик нажатия клавиши Esc
   document.addEventListener('keydown', handleEscapeKey);
 }
 
 // Функция для закрытия модального окна
-function closeModal(popup) {
+export function closeModal(popup) {
   popup.classList.remove('popup_is-opened');
-  // Удаляем обработчик нажатия клавиши Esc
+  // Удаляем обработчик нажатия клавиши Escape
   document.removeEventListener('keydown', handleEscapeKey);
 }
 
@@ -79,20 +79,5 @@ export function initModalTriggers() {
       
       openModal(newCardPopup);
     });
-  }
-}
-
-// Функция для открытия модального окна с изображением
-export function openImageModal(imageSrc, imageAlt) {
-  const imagePopup = document.querySelector('.popup_type_image');
-  const popupImage = imagePopup.querySelector('.popup__image');
-  const popupCaption = imagePopup.querySelector('.popup__caption');
-  
-  if (popupImage && popupCaption) {
-    popupImage.src = imageSrc;
-    popupImage.alt = imageAlt;
-    popupCaption.textContent = imageAlt;
-    
-    openModal(imagePopup);
   }
 }
