@@ -1,32 +1,60 @@
 import '../pages/index.css';
 
 import { addCard, deleteCard, likeCard, handleImageClick, showInitialCards } from './card.js';
-import { initModals, initModalTriggers, closeModal } from './modal.js';
+import { initModals, closeModal, openModal } from './modal.js';
 
-// Находим элементы DOM
-export const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
-export const editProfilePopup = document.querySelector('.popup_type_edit');
-export const addCardForm = document.querySelector('.popup_type_new-card .popup__form');
-export const addCardPopup = document.querySelector('.popup_type_new-card');
+// Находим все элементы DOM
+const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
+const editProfilePopup = document.querySelector('.popup_type_edit');
+const addCardForm = document.querySelector('.popup_type_new-card .popup__form');
+const addCardPopup = document.querySelector('.popup_type_new-card');
+
+// Кнопки
+const profileEditButton = document.querySelector('.profile__edit-button');
+const profileAddButton = document.querySelector('.profile__add-button');
+
+// Элементы профиля
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+// Поля формы редактирования профиля
+const editProfileNameInput = document.querySelector('.popup__input_type_name');
+const editProfileJobInput = document.querySelector('.popup__input_type_description');
+
+// Поля формы добавления карточки
+const addCardNameInput = document.querySelector('.popup__input_type_card-name');
+const addCardLinkInput = document.querySelector('.popup__input_type_url');
+
+// Контейнер для карточек
+const placesList = document.querySelector('.places__list');
 
 showInitialCards();
 
 // Инициализируем модальные окна
 initModals();
-initModalTriggers();
 
-// Находим поля формы в DOM
-const addCardNameInput = document.querySelector('.popup__input_type_card-name');
-const addCardLinkInput = document.querySelector('.popup__input_type_url');
+// Обработчик кнопки редактирования профиля
+profileEditButton.addEventListener('click', () => {
+  // Заполняем форму текущими данными профиля
+  editProfileNameInput.value = profileTitle.textContent;
+  editProfileJobInput.value = profileDescription.textContent;
+  
+  openModal(editProfilePopup);
+});
 
-// Находим контейнер для карточек
-const placesList = document.querySelector('.places__list');
+// Обработчик кнопки добавления новой карточки
+profileAddButton.addEventListener('click', () => {
+  // Очищаем форму
+  addCardForm.reset();
+  
+  openModal(addCardPopup);
+});
 
-// Обработчик отправки формы
+// Обработчик отправки формы добавления карточки
 function handleAddCardFormSubmit(evt) {
     evt.preventDefault();
 
-    // Получаем значение полей addCardNameInput и addCardLinkInput из свойства value
+    // Получаем значение полей из свойства value
     const nameValue = addCardNameInput.value;
     const linkValue = addCardLinkInput.value;
 
@@ -47,28 +75,15 @@ function handleAddCardFormSubmit(evt) {
     addCardForm.reset();
 }
 
-// Прикрепляем обработчик к форме:
-addCardForm.addEventListener('submit', handleAddCardFormSubmit); 
-// Находим поля формы в DOM
-const editProfileNameInput = document.querySelector('.popup__input_type_name');
-const editProfileJobInput = document.querySelector('.popup__input_type_description');
-
-// Обработчик «отправки» формы, хотя пока
-// она никуда отправляться не будет
+// Обработчик отправки формы редактирования профиля
 function handleEditProfileFormSubmit(evt) {
-    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
-                                                // Так мы можем определить свою логику отправки.
-                                                // О том, как это делать, расскажем позже.
+    evt.preventDefault();
 
-    // Получите значение полей editProfileJobInput и editProfileNameInput из свойства value
+    // Получаем значения полей из свойства value
     const nameValue = editProfileNameInput.value;
     const jobValue = editProfileJobInput.value;
 
-    // Выберите элементы, куда должны быть вставлены значения полей
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-
-    // Вставьте новые значения с помощью textContent
+    // Вставляем новые значения с помощью textContent
     profileTitle.textContent = nameValue;
     profileDescription.textContent = jobValue;
     
@@ -76,6 +91,6 @@ function handleEditProfileFormSubmit(evt) {
     closeModal(editProfilePopup);
 }
 
-// Прикрепляем обработчик к форме:
-// он будет следить за событием "submit" - «отправка»
+// Прикрепляем обработчики к формам
+addCardForm.addEventListener('submit', handleAddCardFormSubmit); 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit); 

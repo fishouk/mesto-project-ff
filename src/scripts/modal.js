@@ -1,7 +1,3 @@
-import { addCardPopup, editProfilePopup } from './index.js';
-
-console.log(addCardPopup, editProfilePopup);
-
 // Функция для обработки нажатия клавиши Esc
 function handleEscapeKey(evt) {
   if (evt.key === 'Escape') {
@@ -44,42 +40,4 @@ export function initModals() {
       closeButton.addEventListener('click', () => closeModal(popup));
     }
   });
-}
-
-// Функция для инициализации кнопок открытия модальных окон
-export function initModalTriggers() {
-  const profileEditButton = document.querySelector('.profile__edit-button');
-  
-  // Кнопка редактирования профиля
-  if (profileEditButton && editProfilePopup) {
-    profileEditButton.addEventListener('click', () => {
-      const nameInput = editProfilePopup.querySelector('.popup__input_type_name');
-      const descriptionInput = editProfilePopup.querySelector('.popup__input_type_description');
-      const profileTitle = document.querySelector('.profile__title');
-      const profileDescription = document.querySelector('.profile__description');
-      
-      if (nameInput && profileTitle) {
-        nameInput.value = profileTitle.textContent;
-      }
-      if (descriptionInput && profileDescription) {
-        descriptionInput.value = profileDescription.textContent;
-      }
-      
-      openModal(editProfilePopup);
-    });
-  }
-  
-  // Кнопка добавления новой карточки
-  const profileAddButton = document.querySelector('.profile__add-button');
-  
-  if (profileAddButton && addCardPopup) {
-    profileAddButton.addEventListener('click', () => {
-      const form = addCardPopup.querySelector('.popup__form');
-      if (form) {
-        form.reset();
-      }
-      
-      openModal(addCardPopup);
-    });
-  }
 }
