@@ -1,9 +1,10 @@
 import '../pages/index.css';
 
-import { addCard, deleteCard, likeCard, handleImageClick, showInitialCards } from './card.js';
+import { addCard } from './card.js';
+import { initialCards } from './cards.js';
 import { initModals, closeModal, openModal } from './modal.js';
 
-// Находим все элементы DOM
+// Находим все элементы DOM в глобальной области
 const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
 const editProfilePopup = document.querySelector('.popup_type_edit');
 const addCardForm = document.querySelector('.popup_type_new-card .popup__form');
@@ -26,7 +27,39 @@ const addCardNameInput = document.querySelector('.popup__input_type_card-name');
 const addCardLinkInput = document.querySelector('.popup__input_type_url');
 
 // Контейнер для карточек
-const placesList = document.querySelector('.places__list');
+export const placesList = document.querySelector('.places__list');
+
+// Элементы модального окна с изображением
+export const popupImageType = document.querySelector('.popup_type_image');
+export const popupImage = popupImageType.querySelector('.popup__image');
+export const popupCaption = popupImageType.querySelector('.popup__caption');
+
+// Функция удаления карточки
+function deleteCard(cardElement) {
+  cardElement.remove();
+}
+
+// Функция обработки лайка карточки
+function likeCard(likeButton) {
+  likeButton.classList.toggle('card__like-button_is-active');
+}
+
+// Функция обработки клика по изображению карточки
+function handleImageClick(imageSrc, imageAlt) {
+  popupImage.src = imageSrc;
+  popupImage.alt = imageAlt;
+  popupCaption.textContent = imageAlt;
+  
+  openModal(popupImageType);
+}
+
+// Функция для отображения начальных карточек
+function showInitialCards() {
+  initialCards.forEach((cardData) => {
+    const cardElement = addCard(cardData, deleteCard, likeCard, handleImageClick);
+    placesList.append(cardElement);
+  });
+}
 
 showInitialCards();
 

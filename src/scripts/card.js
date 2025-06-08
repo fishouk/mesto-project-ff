@@ -1,34 +1,29 @@
-import { openModal } from './modal.js';
-import { initialCards } from './cards.js';
+import { placesList } from './index.js';
 
-// DOM узлы
-const cardTemplate = document.querySelector('#card-template');
-const placesList = document.querySelector('.places__list');
-
-// Функция создания карточки
-export function addCard(card, deleteCallback, likeCallback, imageClickCallback) {
+// Функция создания карточки из шаблона
+export function addCard(cardData, deleteCallback, likeCallback, imageClickCallback) {
+  const cardTemplate = document.querySelector('#card-template');
   const cardElement = cardTemplate.content.querySelector('.card').cloneNode(true);
+  
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likeButton = cardElement.querySelector('.card__like-button');
   
-  cardImage.src = card?.link;
-  cardImage.alt = card?.name;
-  cardTitle.textContent = card?.name;
+  cardImage.src = cardData.link;
+  cardImage.alt = cardData.name;
+  cardTitle.textContent = cardData.name;
   
   deleteButton.addEventListener('click', () => {
     deleteCallback(cardElement);
   });
   
-  // Добавляем обработчик клика по кнопке лайка
   likeButton.addEventListener('click', () => {
     likeCallback(likeButton);
   });
   
-  // Добавляем обработчик клика по изображению для открытия модального окна
   cardImage.addEventListener('click', () => {
-    imageClickCallback(card?.link, card?.name);
+    imageClickCallback(cardData.link, cardData.name);
   });
   
   return cardElement;
