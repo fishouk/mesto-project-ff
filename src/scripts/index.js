@@ -29,10 +29,12 @@ const addCardLinkInput = document.querySelector('.popup__input_type_url');
 // Контейнер для карточек
 export const placesList = document.querySelector('.places__list');
 
+export const cardTemplate = document.querySelector('#card-template');
+
 // Элементы модального окна с изображением
-export const popupImageType = document.querySelector('.popup_type_image');
-export const popupImage = popupImageType.querySelector('.popup__image');
-export const popupCaption = popupImageType.querySelector('.popup__caption');
+const popupImageType = document.querySelector('.popup_type_image');
+const popupImage = popupImageType.querySelector('.popup__image');
+const popupCaption = popupImageType.querySelector('.popup__caption');
 
 // Функция удаления карточки
 function deleteCard(cardElement) {
@@ -45,7 +47,7 @@ function likeCard(likeButton) {
 }
 
 // Функция обработки клика по изображению карточки
-function handleImageClick(imageSrc, imageAlt) {
+export function handleImageClick(imageSrc, imageAlt) {
   popupImage.src = imageSrc;
   popupImage.alt = imageAlt;
   popupCaption.textContent = imageAlt;
