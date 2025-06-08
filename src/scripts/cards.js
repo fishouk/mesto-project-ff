@@ -1,3 +1,6 @@
+import { openImageModal } from './modal.js';
+
+// Данные для карточек
 const initialCards = [
     {
       name: "Архыз",
@@ -25,10 +28,11 @@ const initialCards = [
     }
 ];
 
-
+// DOM узлы
 const cardTemplate = document.querySelector('#card-template');
 const placesList = document.querySelector('.places__list');
 
+// Функция создания карточки
 function addCard(card, deleteCallback) {
   const cardElement = cardTemplate.content.querySelector('.card').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
@@ -43,14 +47,20 @@ function addCard(card, deleteCallback) {
     deleteCallback(cardElement);
   });
   
+  // Добавляем обработчик клика по изображению для открытия модального окна
+  cardImage.addEventListener('click', () => {
+    openImageModal(card?.link, card?.name);
+  });
+  
   return cardElement;
 }
 
+// Функция удаления карточки
 function deleteCard(cardElement) {
   cardElement.remove();
 }
 
-// @todo: Вывести карточки на страницу
+// Выводим карточки на страницу
 export function showInitialCards() {
   initialCards?.forEach((cardData) => {
     const cardElement = addCard(cardData, deleteCard);
