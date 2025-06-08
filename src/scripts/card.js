@@ -1,7 +1,5 @@
-import { cardTemplate } from './index.js';
-
 // Функция создания карточки из шаблона
-export function addCard(cardData, deleteCallback, likeCallback, imageClickCallback) {
+export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, imageClickCallback) {
   const cardElement = cardTemplate.content.querySelector('.card').cloneNode(true);
   
   const cardImage = cardElement.querySelector('.card__image');

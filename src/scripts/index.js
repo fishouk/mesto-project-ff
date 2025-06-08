@@ -58,7 +58,7 @@ export function handleImageClick(imageSrc, imageAlt) {
 // Функция для отображения начальных карточек
 function showInitialCards() {
   initialCards.forEach((cardData) => {
-    const cardElement = addCard(cardData, deleteCard, likeCard, handleImageClick);
+    const cardElement = addCard(cardData, cardTemplate, deleteCard, likeCard, handleImageClick);
     placesList.append(cardElement);
   });
 }
@@ -100,7 +100,7 @@ function handleAddCardFormSubmit(evt) {
     };
 
     // Создаем элемент карточки и добавляем в начало списка
-    const cardElement = addCard(newCard, deleteCard, likeCard, handleImageClick);
+    const cardElement = addCard(newCard, cardTemplate, deleteCard, likeCard, handleImageClick);
     placesList.prepend(cardElement);
     
     // Закрываем модальное окно после сохранения
