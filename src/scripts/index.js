@@ -1,10 +1,9 @@
 import '../pages/index.css';
 
 import { addCard } from './card.js';
-import { initialCards } from './cards.js';
 import { initModals, closeModal, openModal } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getUserInfo } from './api.js';
+import { getUserInfo, getInitialCards, updateUserInfo, addNewCard, deleteCard as deleteCardAPI } from './api.js';
 
 // Конфигурация валидации
 const validationConfig = {
@@ -44,7 +43,6 @@ const addCardLinkInput = document.querySelector('.popup__input_type_url');
 
 // Контейнер для карточек
 export const placesList = document.querySelector('.places__list');
-
 export const cardTemplate = document.querySelector('#card-template');
 
 // Элементы модального окна с изображением
@@ -61,9 +59,40 @@ function displayUserInfo(userData) {
   currentUserId = userData._id;
 }
 
+// Функция для отображения карточек
+function displayCards(cardsData) {
+  console.log({cardsData});
+  cardsData.forEach((cardData) => {
+    const cardElement = addCard(cardData, cardTemplate, handleDeleteCard, likeCard, handleImageClick, currentUserId);
+    placesList.append(cardElement);
+  });
+}
+
 // Функция для обработки ошибок
 function handleError(error) {
   console.error('Ошибка:', error);
+}
+
+// Функция для изменения текста кнопки при загрузке
+function renderLoading(button, isLoading, loadingText = 'Сохранение...', originalText = 'Сохранить') {
+  if (isLoading) {
+    button.textContent = loadingText;
+    button.disabled = true;
+  } else {
+    button.textContent = originalText;
+    button.disabled = false;
+  }
+}
+
+// Функция обработки удаления карточки (без попапа подтверждения)
+function handleDeleteCard(cardElement, cardId) {
+  // Сразу отправляем запрос на удаление
+  deleteCardAPI(cardId)
+    .then(() => {
+      // Удаляем карточку из DOM после успешного ответа сервера
+      deleteCard(cardElement);
+    })
+    .catch(handleError);
 }
 
 // Функция удаления карточки
@@ -85,23 +114,17 @@ export function handleImageClick(imageSrc, imageAlt) {
   openModal(popupImageType);
 }
 
-// Функция для отображения начальных карточек
-function showInitialCards() {
-  initialCards.forEach((cardData) => {
-    const cardElement = addCard(cardData, cardTemplate, deleteCard, likeCard, handleImageClick);
-    placesList.append(cardElement);
-  });
-}
-
 // Инициализация страницы
 function initPage() {
-  // Загружаем информацию о пользователе
-  getUserInfo()
-    .then(displayUserInfo)
+  // Загружаем данные пользователя и карточки одновременно
+  Promise.all([getUserInfo(), getInitialCards()])
+    .then(([userData, cardsData]) => {
+      // Сначала отображаем информацию о пользователе
+      displayUserInfo(userData);
+      // Затем отображаем карточки (уже зная ID пользователя)
+      displayCards(cardsData);
+    })
     .catch(handleError);
-  
-  // Отображаем начальные карточки (пока используем локальные данные)
-  showInitialCards();
   
   // Инициализируем модальные окна
   initModals();
@@ -144,24 +167,33 @@ function handleAddCardFormSubmit(evt) {
     const nameValue = addCardNameInput.value;
     const linkValue = addCardLinkInput.value;
 
-    // Создаем объект новой карточки
-    const newCard = {
-        name: nameValue,
-        link: linkValue
-    };
+    // Находим кнопку отправки
+    const submitButton = addCardForm.querySelector('.popup__button');
+    
+    // Показываем состояние загрузки
+    renderLoading(submitButton, true);
 
-    // Создаем элемент карточки и добавляем в начало списка
-    const cardElement = addCard(newCard, cardTemplate, deleteCard, likeCard, handleImageClick);
-    placesList.prepend(cardElement);
-    
-    // Закрываем модальное окно после сохранения
-    closeModal(addCardPopup);
-    
-    // Очищаем форму
-    addCardForm.reset();
-    
-    // Очищаем ошибки валидации и делаем кнопку неактивной
-    clearValidation(addCardForm, validationConfig);
+    // Отправляем данные на сервер
+    addNewCard(nameValue, linkValue)
+      .then((newCardData) => {
+        // Создаем элемент карточки с данными с сервера и добавляем в начало списка
+        const cardElement = addCard(newCardData, cardTemplate, handleDeleteCard, likeCard, handleImageClick, currentUserId);
+        placesList.prepend(cardElement);
+        
+        // Закрываем модальное окно
+        closeModal(addCardPopup);
+        
+        // Очищаем форму
+        addCardForm.reset();
+        
+        // Очищаем ошибки валидации и делаем кнопку неактивной
+        clearValidation(addCardForm, validationConfig);
+      })
+      .catch(handleError)
+      .finally(() => {
+        // Возвращаем обычное состояние кнопки
+        renderLoading(submitButton, false);
+      });
 }
 
 // Обработчик отправки формы редактирования профиля
@@ -170,14 +202,27 @@ function handleEditProfileFormSubmit(evt) {
 
     // Получаем значения полей из свойства value
     const nameValue = editProfileNameInput.value;
-    const jobValue = editProfileJobInput.value;
-
-    // Вставляем новые значения с помощью textContent
-    profileTitle.textContent = nameValue;
-    profileDescription.textContent = jobValue;
+    const aboutValue = editProfileJobInput.value;
     
-    // Закрываем модальное окно после сохранения
-    closeModal(editProfilePopup);
+    // Находим кнопку отправки
+    const submitButton = editProfileForm.querySelector('.popup__button');
+    
+    // Показываем состояние загрузки
+    renderLoading(submitButton, true);
+
+    // Отправляем данные на сервер
+    updateUserInfo(nameValue, aboutValue)
+      .then((updatedUserData) => {
+        // Обновляем интерфейс с данными с сервера
+        displayUserInfo(updatedUserData);
+        // Закрываем модальное окно
+        closeModal(editProfilePopup);
+      })
+      .catch(handleError)
+      .finally(() => {
+        // Возвращаем обычное состояние кнопки
+        renderLoading(submitButton, false);
+      });
 }
 
 // Прикрепляем обработчики к формам

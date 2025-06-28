@@ -1,18 +1,30 @@
 // Функция создания карточки из шаблона
-export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, imageClickCallback) {
+export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, imageClickCallback, currentUserId) {
   const cardElement = cardTemplate.content.querySelector('.card').cloneNode(true);
   
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likeButton = cardElement.querySelector('.card__like-button');
+  const likeCount = cardElement.querySelector('.card__like-count');
   
   cardImage.src = cardData.link;
   cardImage.alt = cardData.name;
   cardTitle.textContent = cardData.name;
   
+  // Отображаем количество лайков
+  likeCount.textContent = cardData.likes.length;
+  
+  // Сохраняем ID карточки в элементе для дальнейшего использования
+  cardElement.dataset.cardId = cardData._id;
+  
+  // Показываем кнопку удаления только для карточек текущего пользователя
+  if (cardData.owner._id !== currentUserId) {
+    deleteButton.style.display = 'none';
+  }
+  
   deleteButton.addEventListener('click', () => {
-    deleteCallback(cardElement);
+    deleteCallback(cardElement, cardData._id);
   });
   
   likeButton.addEventListener('click', () => {
