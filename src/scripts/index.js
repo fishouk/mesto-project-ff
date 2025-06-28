@@ -3,6 +3,17 @@ import '../pages/index.css';
 import { addCard } from './card.js';
 import { initialCards } from './cards.js';
 import { initModals, closeModal, openModal } from './modal.js';
+import { enableValidation, clearValidation } from './validation.js';
+
+// Конфигурация валидации
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
 
 // Находим все элементы DOM в глобальной области
 const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
@@ -68,11 +79,17 @@ showInitialCards();
 // Инициализируем модальные окна
 initModals();
 
+// Включаем валидацию форм
+enableValidation(validationConfig);
+
 // Обработчик кнопки редактирования профиля
 profileEditButton.addEventListener('click', () => {
   // Заполняем форму текущими данными профиля
   editProfileNameInput.value = profileTitle.textContent;
   editProfileJobInput.value = profileDescription.textContent;
+  
+  // Очищаем ошибки валидации
+  clearValidation(editProfileForm, validationConfig);
   
   openModal(editProfilePopup);
 });
@@ -81,6 +98,9 @@ profileEditButton.addEventListener('click', () => {
 profileAddButton.addEventListener('click', () => {
   // Очищаем форму
   addCardForm.reset();
+  
+  // Очищаем ошибки валидации и делаем кнопку неактивной
+  clearValidation(addCardForm, validationConfig);
   
   openModal(addCardPopup);
 });
@@ -108,6 +128,9 @@ function handleAddCardFormSubmit(evt) {
     
     // Очищаем форму
     addCardForm.reset();
+    
+    // Очищаем ошибки валидации и делаем кнопку неактивной
+    clearValidation(addCardForm, validationConfig);
 }
 
 // Обработчик отправки формы редактирования профиля
