@@ -18,6 +18,9 @@ const validationConfig = {
 // Переменная для хранения ID пользователя
 let currentUserId = null;
 
+// Переменная для хранения данных о карточке, которую нужно удалить
+let cardToDelete = null;
+
 // Находим все элементы DOM в глобальной области
 const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
 const editProfilePopup = document.querySelector('.popup_type_edit');
@@ -25,6 +28,8 @@ const addCardForm = document.querySelector('.popup_type_new-card .popup__form');
 const addCardPopup = document.querySelector('.popup_type_new-card');
 const editAvatarForm = document.querySelector('.popup_type_edit-avatar .popup__form');
 const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
+const deleteCardForm = document.querySelector('.popup_type_delete-card .popup__form');
+const deleteCardPopup = document.querySelector('.popup_type_delete-card');
 
 // Кнопки
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -90,15 +95,16 @@ function renderLoading(button, isLoading, loadingText = 'Сохранение...
   }
 }
 
-// Функция обработки удаления карточки (без попапа подтверждения)
+// Функция обработки удаления карточки
 function handleDeleteCard(cardElement, cardId) {
-  // Сразу отправляем запрос на удаление
-  deleteCardAPI(cardId)
-    .then(() => {
-      // Удаляем карточку из DOM после успешного ответа сервера
-      deleteCard(cardElement);
-    })
-    .catch(handleError);
+  // Сохраняем данные о карточке для удаления
+  cardToDelete = {
+    element: cardElement,
+    id: cardId
+  };
+  
+  // Открываем попап подтверждения удаления
+  openModal(deleteCardPopup);
 }
 
 // Функция удаления карточки
@@ -283,7 +289,40 @@ function handleEditAvatarFormSubmit(evt) {
       });
 }
 
+// Обработчик отправки формы подтверждения удаления карточки
+function handleDeleteCardFormSubmit(evt) {
+    evt.preventDefault();
+
+    // Проверяем, что есть данные о карточке для удаления
+    if (!cardToDelete) {
+      return;
+    }
+
+    // Находим кнопку отправки
+    const submitButton = deleteCardForm.querySelector('.popup__button');
+    
+    // Показываем состояние загрузки
+    renderLoading(submitButton, true, 'Удаление...', 'Да');
+
+    // Отправляем запрос на удаление
+    deleteCardAPI(cardToDelete.id)
+      .then(() => {
+        // Удаляем карточку из DOM после успешного ответа сервера
+        deleteCard(cardToDelete.element);
+        // Закрываем модальное окно
+        closeModal(deleteCardPopup);
+        // Очищаем данные о карточке
+        cardToDelete = null;
+      })
+      .catch(handleError)
+      .finally(() => {
+        // Возвращаем обычное состояние кнопки
+        renderLoading(submitButton, false, 'Удаление...', 'Да');
+      });
+}
+
 // Прикрепляем обработчики к формам
 addCardForm.addEventListener('submit', handleAddCardFormSubmit); 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
-editAvatarForm.addEventListener('submit', handleEditAvatarFormSubmit); 
+editAvatarForm.addEventListener('submit', handleEditAvatarFormSubmit);
+deleteCardForm.addEventListener('submit', handleDeleteCardFormSubmit); 
