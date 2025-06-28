@@ -3,7 +3,7 @@ import '../pages/index.css';
 import { addCard } from './card.js';
 import { initModals, closeModal, openModal } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getUserInfo, getInitialCards, updateUserInfo, addNewCard, deleteCard as deleteCardAPI } from './api.js';
+import { getUserInfo, getInitialCards, updateUserInfo, addNewCard, deleteCard as deleteCardAPI, likeCard as likeCardAPI, unlikeCard as unlikeCardAPI } from './api.js';
 
 // Конфигурация валидации
 const validationConfig = {
@@ -63,7 +63,7 @@ function displayUserInfo(userData) {
 function displayCards(cardsData) {
   console.log({cardsData});
   cardsData.forEach((cardData) => {
-    const cardElement = addCard(cardData, cardTemplate, handleDeleteCard, likeCard, handleImageClick, currentUserId);
+    const cardElement = addCard(cardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
     placesList.append(cardElement);
   });
 }
@@ -101,8 +101,21 @@ function deleteCard(cardElement) {
 }
 
 // Функция обработки лайка карточки
-function likeCard(likeButton) {
-  likeButton.classList.toggle('card__like-button_is-active');
+function handleLikeCard(cardId, likeButton, likeCountElement) {
+  // Проверяем, активен ли лайк
+  const isLiked = likeButton.classList.contains('card__like-button_is-active');
+  
+  // Выбираем нужный API метод
+  const likeMethod = isLiked ? unlikeCardAPI : likeCardAPI;
+  
+  likeMethod(cardId)
+    .then((updatedCard) => {
+      // Обновляем состояние кнопки лайка
+      likeButton.classList.toggle('card__like-button_is-active');
+      // Обновляем счетчик лайков данными с сервера
+      likeCountElement.textContent = updatedCard.likes.length;
+    })
+    .catch(handleError);
 }
 
 // Функция обработки клика по изображению карточки
@@ -177,7 +190,7 @@ function handleAddCardFormSubmit(evt) {
     addNewCard(nameValue, linkValue)
       .then((newCardData) => {
         // Создаем элемент карточки с данными с сервера и добавляем в начало списка
-        const cardElement = addCard(newCardData, cardTemplate, handleDeleteCard, likeCard, handleImageClick, currentUserId);
+        const cardElement = addCard(newCardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
         placesList.prepend(cardElement);
         
         // Закрываем модальное окно

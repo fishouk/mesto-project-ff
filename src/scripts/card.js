@@ -15,6 +15,12 @@ export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, im
   // Отображаем количество лайков
   likeCount.textContent = cardData.likes.length;
   
+  // Проверяем, лайкнул ли текущий пользователь эту карточку
+  const isLiked = cardData.likes.some(like => like._id === currentUserId);
+  if (isLiked) {
+    likeButton.classList.add('card__like-button_is-active');
+  }
+  
   // Сохраняем ID карточки в элементе для дальнейшего использования
   cardElement.dataset.cardId = cardData._id;
   
@@ -28,7 +34,7 @@ export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, im
   });
   
   likeButton.addEventListener('click', () => {
-    likeCallback(likeButton);
+    likeCallback(cardData._id, likeButton, likeCount);
   });
   
   cardImage.addEventListener('click', () => {
