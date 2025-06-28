@@ -45,6 +45,18 @@ export const updateUserInfo = (name, about) => {
   .then(checkResponse);
 };
 
+// Обновление аватара
+export const updateAvatar = (avatar) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatar
+    })
+  })
+  .then(checkResponse);
+};
+
 // Добавление новой карточки
 export const addNewCard = (name, link) => {
   return fetch(`${config.baseUrl}/cards`, {
