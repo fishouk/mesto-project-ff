@@ -4,6 +4,7 @@ import { addCard } from './card.js';
 import { initialCards } from './cards.js';
 import { initModals, closeModal, openModal } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
+import { getUserInfo } from './api.js';
 
 // Конфигурация валидации
 const validationConfig = {
@@ -14,6 +15,9 @@ const validationConfig = {
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
 };
+
+// Переменная для хранения ID пользователя
+let currentUserId = null;
 
 // Находим все элементы DOM в глобальной области
 const editProfileForm = document.querySelector('.popup_type_edit .popup__form');
@@ -28,6 +32,7 @@ const profileAddButton = document.querySelector('.profile__add-button');
 // Элементы профиля
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector('.profile__image');
 
 // Поля формы редактирования профиля
 const editProfileNameInput = document.querySelector('.popup__input_type_name');
@@ -46,6 +51,20 @@ export const cardTemplate = document.querySelector('#card-template');
 const popupImageType = document.querySelector('.popup_type_image');
 const popupImage = popupImageType.querySelector('.popup__image');
 const popupCaption = popupImageType.querySelector('.popup__caption');
+
+// Функция для отображения информации о пользователе
+function displayUserInfo(userData) {
+  console.log({userData})
+  profileTitle.textContent = userData.name;
+  profileDescription.textContent = userData.about;
+  profileImage.style.backgroundImage = `url(${userData.avatar})`;
+  currentUserId = userData._id;
+}
+
+// Функция для обработки ошибок
+function handleError(error) {
+  console.error('Ошибка:', error);
+}
 
 // Функция удаления карточки
 function deleteCard(cardElement) {
@@ -74,13 +93,25 @@ function showInitialCards() {
   });
 }
 
-showInitialCards();
+// Инициализация страницы
+function initPage() {
+  // Загружаем информацию о пользователе
+  getUserInfo()
+    .then(displayUserInfo)
+    .catch(handleError);
+  
+  // Отображаем начальные карточки (пока используем локальные данные)
+  showInitialCards();
+  
+  // Инициализируем модальные окна
+  initModals();
+  
+  // Включаем валидацию форм
+  enableValidation(validationConfig);
+}
 
-// Инициализируем модальные окна
-initModals();
-
-// Включаем валидацию форм
-enableValidation(validationConfig);
+// Запускаем инициализацию страницы
+initPage();
 
 // Обработчик кнопки редактирования профиля
 profileEditButton.addEventListener('click', () => {
