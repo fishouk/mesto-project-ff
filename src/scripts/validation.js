@@ -18,16 +18,13 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
 
 // Функция для проверки валидности поля
 const checkInputValidity = (formElement, inputElement, validationConfig) => {
-  // Проверяем кастомное правило для имени и названия
-  if (inputElement.dataset.errorMessage && !inputElement.validity.valid) {
-    const pattern = /^[a-zA-Zа-яёА-ЯЁ\s\-]+$/;
-    if (!pattern.test(inputElement.value)) {
+  if (!inputElement.validity.valid) {
+    // Если есть кастомное сообщение об ошибке для проверки по pattern
+    if (inputElement.dataset.errorMessage && inputElement.validity.patternMismatch) {
       showInputError(formElement, inputElement, inputElement.dataset.errorMessage, validationConfig);
     } else {
       showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
     }
-  } else if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
   } else {
     hideInputError(formElement, inputElement, validationConfig);
   }
@@ -40,16 +37,14 @@ const hasInvalidInput = (inputList) => {
   });
 };
 
+// Функция управления блокировкой кнопки
+const setButtonDisable = (buttonElement, validationConfig, inputList, state) => {
+  buttonElement.disabled = state;
+  state ? buttonElement.classList.add(validationConfig.inactiveButtonClass) : buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+}
+
 // Функция для переключения состояния кнопки
-const toggleButtonState = (inputList, buttonElement, validationConfig) => {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
-    buttonElement.disabled = true;
-  } else {
-    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
-    buttonElement.disabled = false;
-  }
-};
+const toggleButtonState = (inputList, buttonElement, validationConfig) => setButtonDisable(buttonElement, validationConfig, inputList, hasInvalidInput(inputList));
 
 // Функция для установки слушателей событий на форму
 const setEventListeners = (formElement, validationConfig) => {
@@ -86,6 +81,5 @@ export const clearValidation = (formElement, validationConfig) => {
   });
   
   // Делаем кнопку неактивной
-  buttonElement.classList.add(validationConfig.inactiveButtonClass);
-  buttonElement.disabled = true;
+  setButtonDisable(buttonElement, validationConfig, inputList, true);
 }; 

@@ -1,6 +1,6 @@
 import '../pages/index.css';
 
-import { addCard } from './card.js';
+import { createCard } from './card.js';
 import { initModals, closeModal, openModal } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
 import { getUserInfo, getInitialCards, updateUserInfo, addNewCard, deleteCard as deleteCardAPI, likeCard as likeCardAPI, unlikeCard as unlikeCardAPI, updateAvatar } from './api.js';
@@ -74,7 +74,7 @@ function displayUserInfo(userData) {
 function displayCards(cardsData) {
   console.log({cardsData});
   cardsData.forEach((cardData) => {
-    const cardElement = addCard(cardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
+    const cardElement = createCard(cardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
     placesList.append(cardElement);
   });
 }
@@ -213,7 +213,7 @@ function handleAddCardFormSubmit(evt) {
     addNewCard(nameValue, linkValue)
       .then((newCardData) => {
         // Создаем элемент карточки с данными с сервера и добавляем в начало списка
-        const cardElement = addCard(newCardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
+        const cardElement = createCard(newCardData, cardTemplate, handleDeleteCard, handleLikeCard, handleImageClick, currentUserId);
         placesList.prepend(cardElement);
         
         // Закрываем модальное окно

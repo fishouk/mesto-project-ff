@@ -1,5 +1,5 @@
 // Функция создания карточки из шаблона
-export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, imageClickCallback, currentUserId) {
+export function createCard(cardData, cardTemplate, deleteCallback, likeCallback, imageClickCallback, currentUserId) {
   const cardElement = cardTemplate.content.querySelector('.card').cloneNode(true);
   
   const cardImage = cardElement.querySelector('.card__image');
@@ -20,9 +20,6 @@ export function addCard(cardData, cardTemplate, deleteCallback, likeCallback, im
   if (isLiked) {
     likeButton.classList.add('card__like-button_is-active');
   }
-  
-  // Сохраняем ID карточки в элементе для дальнейшего использования
-  cardElement.dataset.cardId = cardData._id;
   
   // Показываем кнопку удаления только для карточек текущего пользователя
   if (cardData.owner._id !== currentUserId) {
